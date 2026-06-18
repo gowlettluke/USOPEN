@@ -92,6 +92,31 @@ function roundScoreDisplay(line){
   // Keep whatever ESPN provides, but normalise empty values to a dash.
   return line.displayValue ?? line.value ?? '—';
 }
+function positionSortValue(pos){
+  const s = String(pos ?? '').trim().toUpperCase();
+  if(!s) return 999999;
+
+  // Keep non-scoring statuses after normal leaderboard positions.
+  if(/^(CUT|MC|MDF)$/.test(s)) return 900000;
+  if(/^(WD|W\/D|WITHDRAWN)$/.test(s)) return 910000;
+  if(/^DQ$/.test(s)) return 920000;
+
+  // Handles 1, T1, T10, =10, etc. as actual numbers.
+  const n = parseInt(s.replace(/[^0-9]/g, ''), 10);
+  return Number.isFinite(n) ? n : 999999;
+}
+function leaderboardSort(a,b){
+  const pa = positionSortValue(a.pos);
+  const pb = positionSortValue(b.pos);
+  if(pa !== pb) return pa - pb;
+
+  // Tied positions can still be ordered by score, then name.
+  const ta = a.total == null ? 999999 : a.total;
+  const tb = b.total == null ? 999999 : b.total;
+  if(ta !== tb) return ta - tb;
+
+  return String(a.name || '').localeCompare(String(b.name || ''));
+}
 function flatten(event){
   const comp = (event.competitions||[])[0] || {};
   return (comp.competitors||[]).map((c,idx)=>{
@@ -106,8 +131,8 @@ function flatten(event){
       const line = lines.find(x => Number(x.period) === n) || lines[n-1];
       return roundScoreDisplay(line);
     });
-    return {pos:c.curatedRank?.current || c.order || idx+1, player:a, name:a.displayName||a.fullName||'Unknown', total:scoreNum(c.score), totalRaw:c.score||'—', today, thru, rounds, picked:null};
-  }).sort((a,b)=>(a.total??999)-(b.total??999) || String(a.pos).localeCompare(String(b.pos)));
+    return {pos:c.curatedRank?.current || c.order || idx+1, posSort:positionSortValue(c.curatedRank?.current || c.order || idx+1), player:a, name:a.displayName||a.fullName||'Unknown', total:scoreNum(c.score), totalRaw:c.score||'—', today, thru, rounds, picked:null};
+  }).sort(leaderboardSort);
 }
 function teamSnapshot(team, rows){
   const found = team.players.map(target => ({
