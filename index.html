@@ -88,9 +88,57 @@ async function getData(){
 }
 function roundScoreDisplay(line){
   if(!line) return '—';
-  // ESPN commonly exposes round strokes as value/displayValue and round-to-par in displayValue on live events.
-  // Keep whatever ESPN provides, but normalise empty values to a dash.
-  return line.displayValue ?? line.value ?? '—';
+  // ESPN usually puts the round-to-par in displayValue and gross strokes in value.
+  // For this pool we display the to-par value when available.
+  const v = line.displayValue ?? line.value;
+  return (v === undefined || v === null || v === '') ? '—' : v;
+}
+function scoringRoundLines(lines){
+  return (lines || []).filter(line => {
+    if(!line) return false;
+    if(line.value !== undefined && line.value !== null) return true;
+    if(line.displayValue !== undefined && line.displayValue !== null && line.displayValue !== '') return true;
+    if(Array.isArray(line.linescores) && line.linescores.length) return true;
+    return false;
+  });
+}
+function getCurrentRoundLine(lines){
+  const scoring = scoringRoundLines(lines);
+  if(!scoring.length) return null;
+
+  // During live play the active round is the latest scoring round with hole-by-hole data.
+  // This works across R1, R2, R3 and R4. ESPN also includes placeholder future rounds
+  // such as { period: 2 }, so do not blindly use linescores[0] or the final array item.
+  const withHoles = scoring.filter(line => Array.isArray(line.linescores) && line.linescores.length);
+  return withHoles[withHoles.length - 1] || scoring[scoring.length - 1];
+}
+function statusTextFromCompetitor(c){
+  const fields = [
+    c?.status?.type?.name,
+    c?.status?.type?.state,
+    c?.status?.type?.description,
+    c?.status?.displayValue,
+    c?.status?.description
+  ].filter(Boolean).join(' ').toUpperCase();
+
+  if(/\b(MC|CUT|MDF)\b/.test(fields)) return 'MC';
+  if(/\b(WD|W\/D|WITHDRAWN)\b/.test(fields)) return 'WD';
+  if(/\bDQ\b/.test(fields)) return 'DQ';
+  return '';
+}
+function getThru(c, event){
+  const status = statusTextFromCompetitor(c);
+  if(status) return status;
+
+  const line = getCurrentRoundLine(c.linescores || []);
+  const holes = Array.isArray(line?.linescores) ? line.linescores : [];
+  if(!holes.length) return '—';
+
+  // ESPN's hole list contains one entry per completed hole. It may start at hole 10,
+  // so the correct THRU value is the count of scored holes, not the last hole number.
+  const completed = holes.filter(h => h && (h.value !== undefined || h.displayValue !== undefined)).length;
+  if(completed >= 18) return 'F';
+  return String(completed);
 }
 function positionSortValue(pos){
   const s = String(pos ?? '').trim().toUpperCase();
@@ -122,13 +170,11 @@ function flatten(event){
   return (comp.competitors||[]).map((c,idx)=>{
     const a=c.athlete||{};
     const lines=c.linescores||[];
-    const completed=lines.filter(x=>x && (x.value!=null || x.displayValue!=null));
-    const latest=completed[completed.length-1] || {};
-    const stats=latest.statistics?.categories?.[0]?.stats || [];
-    const thru = stats.find(s=>/thru/i.test(s.name||s.displayName||''))?.displayValue || stats[5]?.displayValue || c.status?.displayValue || '';
-    const today = latest.displayValue || latest.value || c.period || '';
+    const currentRound = getCurrentRoundLine(lines) || {};
+    const thru = getThru(c, event);
+    const today = roundScoreDisplay(currentRound);
     const rounds = [1,2,3,4].map(n => {
-      const line = lines.find(x => Number(x.period) === n) || lines[n-1];
+      const line = lines.find(x => Number(x.period) === n);
       return roundScoreDisplay(line);
     });
     return {pos:c.curatedRank?.current || c.order || idx+1, posSort:positionSortValue(c.curatedRank?.current || c.order || idx+1), player:a, name:a.displayName||a.fullName||'Unknown', total:scoreNum(c.score), totalRaw:c.score||'—', today, thru, rounds, picked:null};
