@@ -20,9 +20,32 @@
     .team{background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.02));border:1px solid var(--line);border-radius:22px;padding:16px;box-shadow:var(--shadow);position:relative}.team.rank1{border-color:rgba(128,240,180,.72);box-shadow:0 18px 60px rgba(0,0,0,.35),0 0 0 1px rgba(128,240,180,.22) inset}
     .teamHead{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:12px}.rankBadge{color:var(--muted);font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}.name{font-size:24px;font-weight:900;letter-spacing:-.03em}.total{font-size:36px;font-weight:950;letter-spacing:-.05em;color:var(--accent)}.total small{font-size:12px;color:var(--muted);font-weight:700;letter-spacing:0;text-transform:uppercase;display:block;text-align:right}.players{display:grid;gap:8px}.player{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;border-top:1px solid rgba(255,255,255,.08);padding-top:8px}.playerName{font-weight:800}.meta{color:var(--muted);font-size:12px}.score{font-size:20px;font-weight:900}.missing{color:var(--bad)}
     .board{margin-top:20px;background:rgba(15,27,23,.9);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);overflow:hidden}.board h2{margin:0;padding:16px 18px;border-bottom:1px solid var(--line);letter-spacing:-.03em}.tableWrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:720px}th,td{text-align:left;padding:11px 12px;border-bottom:1px solid rgba(255,255,255,.07);white-space:nowrap}th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em;background:rgba(255,255,255,.03)}td.scoreCell{font-weight:950;font-size:18px}.mine{background:rgba(128,240,180,.08)}.rank{color:var(--muted);font-variant-numeric:tabular-nums}.status{margin-top:12px;color:var(--muted);font-size:13px;line-height:1.45}.error{color:#ffb1a8}.fine{color:var(--good)}
+
+
+    /* Final result overlay */
+    .endOverlay{position:fixed;inset:0;z-index:50;display:none;color:#f5fff8;background:radial-gradient(circle at 20% 20%,rgba(125,255,174,.18),transparent 28%),radial-gradient(circle at 80% 80%,rgba(255,139,139,.14),transparent 30%),linear-gradient(135deg,rgba(3,16,8,.97),rgba(10,36,21,.97) 50%,rgba(18,9,11,.97));overflow:auto}
+    .endOverlay.show{display:block}.endPage{position:relative;z-index:2;min-height:100vh;display:grid;grid-template-rows:auto 1fr auto;padding:28px;gap:20px}.endClose{position:fixed;right:18px;top:18px;z-index:55;border:1px solid rgba(255,255,255,.24);background:rgba(0,0,0,.34);color:white;border-radius:999px;padding:10px 14px;font-weight:900;cursor:pointer;backdrop-filter:blur(10px)}.endHeader{text-align:center}.endHeader h2{margin:0;font-size:clamp(30px,5vw,64px);letter-spacing:-.04em;line-height:.95}.endSub{margin-top:10px;color:rgba(245,255,248,.72);font-size:18px}.resultGrid{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:stretch;max-width:1180px;width:100%;margin:0 auto}.endPanel{border:1px solid rgba(255,255,255,.18);border-radius:28px;padding:28px;background:rgba(255,255,255,.1);box-shadow:0 24px 80px rgba(0,0,0,.35);backdrop-filter:blur(14px);display:flex;flex-direction:column;min-height:420px;position:relative;overflow:hidden}.endPanel.winner{outline:2px solid rgba(255,211,106,.45)}.endPanel.loser{outline:2px solid rgba(255,139,139,.35)}.endLabel{font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:rgba(245,255,248,.72)}.endEmoji{font-size:60px;margin:12px 0 6px}.endName{font-size:clamp(42px,6vw,76px);font-weight:900;line-height:.9}.endScore{margin-top:16px;font-size:42px;font-weight:900}.winner .endScore{color:#7dffae}.loser .endScore{color:#ff8b8b}.endPlayers{margin-top:auto;display:grid;gap:10px}.endPlayerRow{display:grid;grid-template-columns:1fr auto auto auto auto auto;gap:12px;align-items:center;padding:10px 12px;border-radius:14px;background:rgba(0,0,0,.24);color:rgba(255,255,255,.88);font-size:14px}.endPlayerRow b{font-size:15px}.endFooter{text-align:center;color:rgba(245,255,248,.72)}.endConfetti,.endTears{position:fixed;inset:0;pointer-events:none;z-index:1;overflow:hidden}.endConfetti span,.endTears span{position:absolute;top:-30px;animation:endFall linear infinite;opacity:.95}.endConfetti span{width:10px;height:18px;border-radius:3px}.endTears span{font-size:26px;animation-name:endTearFall}.flash{position:absolute;inset:auto -20% -40% -20%;height:55%;background:radial-gradient(circle,rgba(255,211,106,.22),transparent 62%)}@keyframes endFall{to{transform:translate3d(var(--x),110vh,0) rotate(720deg)}}@keyframes endTearFall{to{transform:translate3d(var(--x),110vh,0) rotate(30deg);opacity:.25}}@media(max-width:820px){.resultGrid{grid-template-columns:1fr}.endPanel{min-height:360px}.endPlayerRow{grid-template-columns:1fr auto auto}.endHideMobile{display:none}.endPage{padding:18px}}
   </style>
 </head>
 <body>
+
+<div class="endOverlay" id="endOverlay" aria-hidden="true">
+  <button class="endClose" id="endCloseBtn">Close final screen</button>
+  <div class="endConfetti" id="endConfetti"></div>
+  <div class="endTears" id="endTears"></div>
+  <main class="endPage">
+    <header class="endHeader">
+      <h2>🏆 Tournament Finished</h2>
+      <div class="endSub">Final pool results. Close this to see the final dashboard underneath.</div>
+    </header>
+    <section class="resultGrid">
+      <article class="endPanel winner" id="endWinnerPanel"></article>
+      <article class="endPanel loser" id="endLoserPanel"></article>
+    </section>
+    <footer class="endFooter" id="endFooter"></footer>
+  </main>
+</div>
+
 <header><div class="wrap top"><div><h1>U.S. Open Pool</h1><div class="sub" id="eventTitle">Loading live leaderboard…</div></div><div class="controls"><span class="pill"><span id="liveDot" class="dot"></span><span id="refreshText">Not updated yet</span></span><button class="btn" id="refreshBtn">Refresh now</button></div></div></header>
 <main class="wrap"><section class="grid" id="teams"></section><section class="board"><h2>Live leaderboard</h2><div class="tableWrap"><table><thead><tr><th>Pos</th><th>Player</th><th>Owner</th><th>Total</th><th>Today</th><th>Thru</th><th>R1</th><th>R2</th><th>R3</th><th>R4</th></tr></thead><tbody id="leaderboard"><tr><td colspan="10">Loading…</td></tr></tbody></table></div></section><div class="status" id="status"></div></main>
 <script>
@@ -98,11 +121,7 @@ function teamSnapshot(team, rows){
 }
 function renderTeams(rows){
   const root=document.getElementById('teams'); root.innerHTML='';
-  const snapshots = TEAMS.map(t => teamSnapshot(t, rows)).sort((a,b) => {
-    // Lowest combined tournament score leads. Incomplete teams are pushed behind complete teams.
-    if (a.complete !== b.complete) return a.complete ? -1 : 1;
-    return a.total - b.total || a.team.owner.localeCompare(b.team.owner);
-  });
+  const snapshots = makeTeamSnapshots(rows);
   snapshots.forEach((snap, idx) => {
     const team = snap.team;
     const card=document.createElement('article'); card.className=`team ${idx===0 && snap.complete ? 'rank1' : ''}`;
@@ -128,6 +147,80 @@ function renderBoard(rows){
     body.appendChild(tr);
   }
 }
+
+function isWinnerPosition(pos){
+  const s = String(pos ?? '').trim();
+  return s === '1' || /^T?1$/i.test(s);
+}
+function isEventFinal(event){
+  const comp = (event.competitions || [])[0] || {};
+  const status = comp.status || event.status || {};
+  const type = status.type || {};
+  const text = `${type.name||''} ${type.state||''} ${type.description||''} ${status.displayValue||''}`.toLowerCase();
+  return Boolean(type.completed || /final|complete|completed|official/.test(text));
+}
+function makeTeamSnapshots(rows){
+  return TEAMS.map(t => {
+    const snap = teamSnapshot(t, rows);
+    snap.hasTournamentWinner = snap.found.some(x => x.row && isWinnerPosition(x.row.pos));
+    return snap;
+  }).sort((a,b) => {
+    if (a.complete !== b.complete) return a.complete ? -1 : 1;
+    return a.total - b.total || a.team.owner.localeCompare(b.team.owner);
+  });
+}
+function endPlayerHtml(item){
+  const r = item.row;
+  if(!r) return `<div class="endPlayerRow"><b>${item.target}</b><span>Not found</span><span class="endHideMobile">—</span><span class="endHideMobile">—</span><span class="endHideMobile">—</span><span>—</span></div>`;
+  const status = /cut|wd|withdraw|dq/i.test(r.thru || '') ? r.thru : '';
+  return `<div class="endPlayerRow"><b>${item.target}</b><span>Tot ${fmt(r.total)}</span><span class="endHideMobile">R1 ${r.rounds[0]}</span><span class="endHideMobile">R2 ${r.rounds[1]}</span><span class="endHideMobile">R3 ${r.rounds[2]}</span><span>${status || ('R4 ' + r.rounds[3])}</span></div>`;
+}
+function renderEndScreen(rows, event){
+  const snaps = makeTeamSnapshots(rows).filter(s => s.complete);
+  if(!snaps.length) return;
+  const winner = snaps[0];
+  const loserPool = snaps.filter(s => !s.hasTournamentWinner);
+  const loser = (loserPool.length ? loserPool : snaps).slice().sort((a,b)=>b.total-a.total || a.team.owner.localeCompare(b.team.owner))[0];
+  document.getElementById('endWinnerPanel').innerHTML = `<div class="flash"></div><div class="endLabel">Winner</div><div class="endEmoji">🍾🏌️‍♂️</div><div class="endName">${winner.team.owner}</div><div class="endScore">Combined: ${fmt(winner.total)}</div><div class="endSub">Lowest combined tournament score.</div><div class="endPlayers">${winner.found.map(endPlayerHtml).join('')}</div>`;
+  const exemptText = loserPool.length ? 'Worst eligible score. Anyone who picked the tournament winner is exempt from coming last.' : 'Everyone picked the tournament winner, so normal worst-score rules apply.';
+  document.getElementById('endLoserPanel').innerHTML = `<div class="endLabel">Worst Score</div><div class="endEmoji">😭🍕</div><div class="endName">${loser.team.owner}</div><div class="endScore">Combined: ${fmt(loser.total)}</div><div class="endSub">${exemptText}</div><div class="endPlayers">${loser.found.map(endPlayerHtml).join('')}</div>`;
+  document.getElementById('endFooter').textContent = `${event.name || event.shortName || 'Tournament'} final. Cut players still count toward team totals.`;
+  showEndScreen();
+}
+let endClosedThisLoad = false;
+let endParticlesMade = false;
+function showEndScreen(){
+  if(endClosedThisLoad) return;
+  const overlay = document.getElementById('endOverlay');
+  overlay.classList.add('show');
+  overlay.setAttribute('aria-hidden','false');
+  makeEndParticles();
+}
+function closeEndScreen(){
+  endClosedThisLoad = true;
+  const overlay = document.getElementById('endOverlay');
+  overlay.classList.remove('show');
+  overlay.setAttribute('aria-hidden','true');
+}
+function makeEndParticles(){
+  if(endParticlesMade) return;
+  endParticlesMade = true;
+  const colors = ['#ffd36a','#7dffae','#7fc7ff','#ff8b8b','#d6a4ff','#ffffff'];
+  const confetti = document.getElementById('endConfetti');
+  const tears = document.getElementById('endTears');
+  for(let i=0;i<120;i++){
+    const el=document.createElement('span');
+    el.style.left=Math.random()*100+'vw'; el.style.background=colors[i%colors.length];
+    el.style.animationDuration=3+Math.random()*4+'s'; el.style.animationDelay=Math.random()*3+'s';
+    el.style.setProperty('--x',(Math.random()*160-80)+'px'); confetti.appendChild(el);
+  }
+  for(let i=0;i<35;i++){
+    const el=document.createElement('span'); el.textContent='💧';
+    el.style.left=55+Math.random()*42+'vw'; el.style.animationDuration=3.2+Math.random()*3.5+'s'; el.style.animationDelay=Math.random()*4+'s';
+    el.style.setProperty('--x',(Math.random()*80-20)+'px'); tears.appendChild(el);
+  }
+}
+
 async function update(){
   const status=document.getElementById('status'); const dot=document.getElementById('liveDot');
   try{
@@ -136,6 +229,7 @@ async function update(){
     const rows=flatten(event);
     document.getElementById('eventTitle').textContent = `${event.name || event.shortName || 'U.S. Open'}${event.date ? ' · ' + new Date(event.date).toLocaleDateString() : ''}`;
     renderBoard(rows); renderTeams(rows);
+    if (isEventFinal(event)) renderEndScreen(rows, event);
     const now=new Date();
     document.getElementById('refreshText').textContent=`Updated ${now.toLocaleTimeString()}`;
     dot.className='dot live';
@@ -146,6 +240,7 @@ async function update(){
   }
 }
 document.getElementById('refreshBtn').addEventListener('click', update);
+document.getElementById('endCloseBtn').addEventListener('click', closeEndScreen);
 update(); setInterval(update, REFRESH_MS);
 </script>
 </body>
