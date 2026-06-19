@@ -21,6 +21,13 @@
     .teamHead{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:12px}.rankBadge{color:var(--muted);font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}.name{font-size:24px;font-weight:900;letter-spacing:-.03em}.total{font-size:36px;font-weight:950;letter-spacing:-.05em;color:var(--accent)}.total small{font-size:12px;color:var(--muted);font-weight:700;letter-spacing:0;text-transform:uppercase;display:block;text-align:right}.players{display:grid;gap:8px}.player{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;border-top:1px solid rgba(255,255,255,.08);padding-top:8px}.playerName{font-weight:800}.meta{color:var(--muted);font-size:12px}.score{font-size:20px;font-weight:900}.missing{color:var(--bad)}
     .board{margin-top:20px;background:rgba(15,27,23,.9);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);overflow:hidden}.board h2{margin:0;padding:16px 18px;border-bottom:1px solid var(--line);letter-spacing:-.03em}.tableWrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:720px}th,td{text-align:left;padding:11px 12px;border-bottom:1px solid rgba(255,255,255,.07);white-space:nowrap}th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em;background:rgba(255,255,255,.03)}td.scoreCell{font-weight:950;font-size:18px}.mine{background:rgba(128,240,180,.08)}.rank{color:var(--muted);font-variant-numeric:tabular-nums}.status{margin-top:12px;color:var(--muted);font-size:13px;line-height:1.45}.error{color:#ffb1a8}.fine{color:var(--good)}
 
+    /* Pool worm graph */
+    .wormBoard{position:relative}.wormIntro{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;padding:12px 18px;color:var(--muted);font-size:13px;border-bottom:1px solid rgba(255,255,255,.07)}
+    .wormLegend{display:flex;gap:10px;flex-wrap:wrap}.wormKey{display:inline-flex;align-items:center;gap:7px;font-weight:800;color:var(--text)}.wormSwatch{width:22px;height:4px;border-radius:99px;background:currentColor}.wormCanvas{position:relative;min-height:380px;padding:8px 12px 16px}.wormCanvas svg{display:block;width:100%;height:380px;overflow:visible}.wormEmpty{padding:28px 18px;color:var(--muted)}
+    .wormTooltip{position:absolute;z-index:4;display:none;pointer-events:none;min-width:190px;max-width:280px;padding:10px 12px;border:1px solid rgba(255,255,255,.18);border-radius:14px;background:rgba(5,10,8,.92);box-shadow:0 14px 40px rgba(0,0,0,.35);backdrop-filter:blur(10px);font-size:12px;color:var(--text)}
+    .wormTooltip b{font-size:13px}.wormTooltip .muted{color:var(--muted)}.wormTooltip table{min-width:0}.wormTooltip td{padding:3px 6px;border:0}.wormTooltip td:first-child{padding-left:0}.wormAxisText{fill:#9db1a8;font-size:12px;font-weight:700}.wormGrid{stroke:rgba(255,255,255,.09);stroke-width:1}.wormRoundLine{stroke:rgba(128,240,180,.22);stroke-width:1.2;stroke-dasharray:5 6}.wormPath{fill:none;stroke-width:3.3;stroke-linecap:round;stroke-linejoin:round}.wormDot{stroke:#07100d;stroke-width:2}.wormEndLabel{font-size:13px;font-weight:900;paint-order:stroke;stroke:#07100d;stroke-width:4px;stroke-linejoin:round}.wormHoverLine{stroke:rgba(255,255,255,.32);stroke-width:1;display:none}.wormNote{padding:0 18px 16px;color:var(--muted);font-size:12px;line-height:1.45}
+    @media(max-width:700px){.wormCanvas{padding:6px 6px 14px}.wormCanvas svg{height:320px}.wormIntro{align-items:flex-start}.wormLegend{width:100%}}
+
 
     /* Final result overlay */
     .endOverlay{position:fixed;inset:0;z-index:50;display:none;color:#f5fff8;background:radial-gradient(circle at 20% 20%,rgba(125,255,174,.18),transparent 28%),radial-gradient(circle at 80% 80%,rgba(255,139,139,.14),transparent 30%),linear-gradient(135deg,rgba(3,16,8,.97),rgba(10,36,21,.97) 50%,rgba(18,9,11,.97));overflow:auto}
@@ -47,7 +54,7 @@
 </div>
 
 <header><div class="wrap top"><div><h1>U.S. Open Pool</h1><div class="sub" id="eventTitle">Loading live leaderboard…</div></div><div class="controls"><span class="pill"><span id="liveDot" class="dot"></span><span id="refreshText">Not updated yet</span></span><button class="btn" id="refreshBtn">Refresh now</button></div></div></header>
-<main class="wrap"><section class="grid" id="teams"></section><section class="board"><h2>Live leaderboard</h2><div class="tableWrap"><table><thead><tr><th>Pos</th><th>Player</th><th>Owner</th><th>Total</th><th>Today</th><th>Thru</th><th>R1</th><th>R2</th><th>R3</th><th>R4</th></tr></thead><tbody id="leaderboard"><tr><td colspan="10">Loading…</td></tr></tbody></table></div></section><div class="status" id="status"></div></main>
+<main class="wrap"><section class="grid" id="teams"></section><section class="board wormBoard"><h2>Pool worm graph</h2><div class="wormIntro"><span>Live score history rebuilt from picked golfers' hole-by-hole data. Every line advances together at each scoring event.</span><div class="wormLegend" id="wormLegend"></div></div><div class="wormCanvas" id="wormGraph"><div class="wormEmpty">Loading worm graph…</div></div><div class="wormNote" id="wormNote"></div></section><section class="board"><h2>Live leaderboard</h2><div class="tableWrap"><table><thead><tr><th>Pos</th><th>Player</th><th>Owner</th><th>Total</th><th>Today</th><th>Thru</th><th>R1</th><th>R2</th><th>R3</th><th>R4</th></tr></thead><tbody id="leaderboard"><tr><td colspan="10">Loading…</td></tr></tbody></table></div></section><div class="status" id="status"></div></main>
 <script>
 const EVENT_ID = '401811952'; // ESPN's 2026 U.S. Open event id.
 const ESPN = 'https://site.api.espn.com/apis/site/v2/sports/golf/pga/scoreboard';
@@ -219,6 +226,176 @@ function renderBoard(rows){
   }
 }
 
+const TEAM_COLOURS = { James:'#7fc7ff', Luke:'#7dffae', Blake:'#ffcf70', Troy:'#ff8b8b' };
+let WORM_LAST = null;
+function escHtml(s){return String(s ?? '').replace(/[&<>"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));}
+function competitorPicked(c){
+  const a = c?.athlete || {};
+  const names = [a.fullName, a.displayName, a.shortName].filter(Boolean);
+  for (const team of TEAMS) for (const target of team.players){
+    const aliases = [target, ...((team.aliases && team.aliases[target]) || [])];
+    if (names.some(n => aliases.some(alias => norm(n) === norm(alias)))) return {owner:team.owner, target};
+  }
+  return null;
+}
+function holeDelta(h){
+  const raw = h?.scoreType?.displayValue ?? h?.scoreType?.value;
+  const n = scoreNum(raw);
+  return n == null ? null : n;
+}
+function eventTimestampMs(h, line){
+  const candidates = [h?.date, h?.timestamp, h?.time, h?.lastUpdated, h?.statistics?.categories?.[0]?.stats?.slice(-1)?.[0]?.displayValue, line?.date, line?.timestamp, line?.lastUpdated];
+  for (const c of candidates){
+    if(!c) continue;
+    const ms = Date.parse(c);
+    if(Number.isFinite(ms)) return ms;
+  }
+  return null;
+}
+function getCompetitors(event){
+  const comp = (event.competitions || [])[0] || {};
+  return comp.competitors || [];
+}
+function buildWormData(event){
+  const owners = TEAMS.map(t => t.owner);
+  const events = [];
+  const competitors = getCompetitors(event);
+  for(const c of competitors){
+    const picked = competitorPicked(c);
+    if(!picked) continue;
+    const a = c.athlete || {};
+    const playerName = a.displayName || a.fullName || picked.target;
+    const rounds = scoringRoundLines(c.linescores || []).filter(line => Number(line.period) >= 1 && Number(line.period) <= 4);
+    for(const line of rounds){
+      const round = Number(line.period);
+      const holes = Array.isArray(line.linescores) ? line.linescores : [];
+      for(let i=0;i<holes.length;i++){
+        const h = holes[i];
+        const delta = holeDelta(h);
+        if(delta == null) continue;
+        events.push({
+          owner:picked.owner,
+          target:picked.target,
+          playerName,
+          round,
+          holeSeq:i+1,
+          holeNumber:h?.period ?? i+1,
+          delta,
+          timestamp:eventTimestampMs(h, line),
+          sourceOrder:Number(c.order) || 9999
+        });
+      }
+    }
+  }
+  events.sort((a,b) => {
+    // Use a real per-hole timestamp if ESPN exposes it. Otherwise use a deterministic
+    // scoring-event order so the graph can still be rebuilt with no storage.
+    if(a.timestamp != null && b.timestamp != null && a.timestamp !== b.timestamp) return a.timestamp - b.timestamp;
+    if(a.round !== b.round) return a.round - b.round;
+    if(a.holeSeq !== b.holeSeq) return a.holeSeq - b.holeSeq;
+    if(a.sourceOrder !== b.sourceOrder) return a.sourceOrder - b.sourceOrder;
+    return `${a.owner}${a.target}`.localeCompare(`${b.owner}${b.target}`);
+  });
+
+  const scores = Object.fromEntries(owners.map(o => [o, 0]));
+  const points = [{step:0, scores:{...scores}, event:null}];
+  const roundEndSteps = {};
+  events.forEach((ev, idx) => {
+    scores[ev.owner] += ev.delta;
+    const point = {step:idx+1, scores:{...scores}, event:ev};
+    points.push(point);
+    roundEndSteps[ev.round] = point.step;
+  });
+  const finalScores = Object.fromEntries(owners.map(o => [o, points[points.length-1]?.scores?.[o] ?? 0]));
+  return {owners, events, points, roundEndSteps, finalScores};
+}
+function niceTicks(min,max){
+  if(min === max){ min -= 2; max += 2; }
+  const start = Math.floor(min / 2) * 2;
+  const end = Math.ceil(max / 2) * 2;
+  const span = Math.max(1, end - start);
+  const rough = Math.max(1, Math.ceil(span / 5));
+  const step = rough <= 1 ? 1 : rough <= 2 ? 2 : rough <= 5 ? 5 : Math.ceil(rough / 5) * 5;
+  const out = [];
+  for(let v=start; v<=end; v+=step) out.push(v);
+  return out;
+}
+function renderWormGraph(event){
+  const container = document.getElementById('wormGraph');
+  const legend = document.getElementById('wormLegend');
+  const note = document.getElementById('wormNote');
+  if(!container) return;
+  const worm = buildWormData(event);
+  WORM_LAST = worm;
+  legend.innerHTML = worm.owners.map(o => `<span class="wormKey" style="color:${TEAM_COLOURS[o] || '#ffffff'}"><span class="wormSwatch"></span>${escHtml(o)}</span>`).join('');
+  if(worm.points.length <= 1){
+    container.innerHTML = '<div class="wormEmpty">No picked-golfer hole-by-hole scores are available yet.</div>';
+    note.textContent = 'The worm graph will appear as soon as ESPN exposes hole-by-hole scoring for the selected players.';
+    return;
+  }
+  const W=1100, H=380, L=58, R=110, T=26, B=42;
+  const plotW = W - L - R, plotH = H - T - B;
+  const vals = [];
+  for(const p of worm.points) for(const o of worm.owners) vals.push(p.scores[o]);
+  let min = Math.min(...vals), max = Math.max(...vals);
+  min -= 1; max += 1;
+  const ticks = niceTicks(min,max);
+  min = Math.min(min, ticks[0]); max = Math.max(max, ticks[ticks.length-1]);
+  const n = Math.max(1, worm.points.length - 1);
+  const x = step => L + (step / n) * plotW;
+  const y = val => T + ((val - min) / Math.max(1, max - min)) * plotH;
+  const pathFor = owner => worm.points.map((p,i)=>`${i?'L':'M'}${x(p.step).toFixed(1)},${y(p.scores[owner]).toFixed(1)}`).join(' ');
+  let svg = `<svg id="wormSvg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="Pool worm graph showing team score history"><rect x="0" y="0" width="${W}" height="${H}" fill="transparent"/>`;
+  for(const tick of ticks){
+    svg += `<line class="wormGrid" x1="${L}" x2="${W-R}" y1="${y(tick)}" y2="${y(tick)}"/><text class="wormAxisText" x="${L-12}" y="${y(tick)+4}" text-anchor="end">${fmt(tick)}</text>`;
+  }
+  svg += `<line class="wormGrid" x1="${L}" x2="${L}" y1="${T}" y2="${H-B}"/><line class="wormGrid" x1="${L}" x2="${W-R}" y1="${H-B}" y2="${H-B}"/>`;
+  for(const r of [1,2,3,4]){
+    const step = worm.roundEndSteps[r];
+    if(step && step < worm.points.length-1){
+      const xx=x(step);
+      svg += `<line class="wormRoundLine" x1="${xx}" x2="${xx}" y1="${T}" y2="${H-B}"/><text class="wormAxisText" x="${xx+5}" y="${T+14}">R${r}</text>`;
+    }
+  }
+  for(const owner of worm.owners){
+    const colour = TEAM_COLOURS[owner] || '#ffffff';
+    svg += `<path class="wormPath" d="${pathFor(owner)}" stroke="${colour}"/>`;
+  }
+  const last = worm.points[worm.points.length-1];
+  worm.owners.slice().sort((a,b)=>last.scores[a]-last.scores[b] || a.localeCompare(b)).forEach((owner, idx) => {
+    const colour = TEAM_COLOURS[owner] || '#ffffff';
+    const yy = y(last.scores[owner]) + (idx * 0); // labels sit on true final value
+    svg += `<circle class="wormDot" cx="${x(last.step)}" cy="${y(last.scores[owner])}" r="5.5" fill="${colour}"/><text class="wormEndLabel" x="${x(last.step)+10}" y="${yy+4}" fill="${colour}">${escHtml(owner)} ${fmt(last.scores[owner])}</text>`;
+  });
+  svg += `<line id="wormHoverLine" class="wormHoverLine" x1="${L}" x2="${L}" y1="${T}" y2="${H-B}"/>`;
+  svg += `<text class="wormAxisText" x="${L}" y="${H-10}">Start</text><text class="wormAxisText" x="${W-R}" y="${H-10}" text-anchor="end">Latest scoring event</text></svg><div class="wormTooltip" id="wormTooltip"></div>`;
+  container.innerHTML = svg;
+  note.textContent = `${worm.events.length} picked-golfer scoring events plotted. No browser storage is used; this is rebuilt from the live ESPN feed on each refresh.`;
+
+  const svgEl = document.getElementById('wormSvg');
+  const tooltip = document.getElementById('wormTooltip');
+  const hoverLine = document.getElementById('wormHoverLine');
+  function moveTip(evt){
+    const rect = svgEl.getBoundingClientRect();
+    const rel = Math.max(0, Math.min(1, (evt.clientX - rect.left) / rect.width));
+    const step = Math.max(0, Math.min(worm.points.length-1, Math.round(rel * n)));
+    const p = worm.points[step];
+    const xx = x(step);
+    hoverLine.style.display = 'block';
+    hoverLine.setAttribute('x1', xx); hoverLine.setAttribute('x2', xx);
+    const rows = worm.owners.slice().sort((a,b)=>p.scores[a]-p.scores[b] || a.localeCompare(b)).map((o,i)=>`<tr><td>${i+1}.</td><td style="color:${TEAM_COLOURS[o] || '#fff'}"><b>${escHtml(o)}</b></td><td>${fmt(p.scores[o])}</td></tr>`).join('');
+    const ev = p.event;
+    const evText = ev ? `<div class="muted">Event ${step}: ${escHtml(ev.target)} (${escHtml(ev.owner)}) ${fmt(ev.delta)} · R${ev.round}</div>` : '<div class="muted">Start of scoring</div>';
+    tooltip.innerHTML = `<b>Pool score history</b>${evText}<table>${rows}</table>`;
+    tooltip.style.display = 'block';
+    const left = Math.min(container.clientWidth - 210, Math.max(8, evt.clientX - rect.left + 14));
+    const top = Math.min(container.clientHeight - 120, Math.max(8, evt.clientY - rect.top + 14));
+    tooltip.style.left = left + 'px'; tooltip.style.top = top + 'px';
+  }
+  svgEl.addEventListener('mousemove', moveTip);
+  svgEl.addEventListener('mouseleave', () => { tooltip.style.display='none'; hoverLine.style.display='none'; });
+}
+
 function isWinnerPosition(pos){
   const s = String(pos ?? '').trim();
   return s === '1' || /^T?1$/i.test(s);
@@ -299,12 +476,12 @@ async function update(){
     const {event,url}=await getData();
     const rows=flatten(event);
     document.getElementById('eventTitle').textContent = `${event.name || event.shortName || 'U.S. Open'}${event.date ? ' · ' + new Date(event.date).toLocaleDateString() : ''}`;
-    renderBoard(rows); renderTeams(rows);
+    renderBoard(rows); renderTeams(rows); renderWormGraph(event);
     if (isEventFinal(event)) renderEndScreen(rows, event);
     const now=new Date();
     document.getElementById('refreshText').textContent=`Updated ${now.toLocaleTimeString()}`;
     dot.className='dot live';
-    status.innerHTML=`<span class="fine">Live data loaded.</span> Source: ESPN public scoreboard endpoint. Auto-refreshes every ${Math.round(REFRESH_MS/1000)} seconds. Team totals use each golfer's tournament total across all completed/live rounds, including players who miss the cut. Round-by-round columns show ESPN's available R1–R4 values. Missing players are excluded from a team total and marked with an asterisk.`;
+    status.innerHTML=`<span class="fine">Live data loaded.</span> Source: ESPN public scoreboard endpoint. Auto-refreshes every ${Math.round(REFRESH_MS/1000)} seconds. Team totals use each golfer's tournament total across all completed/live rounds, including players who miss the cut. Round-by-round columns show ESPN's available R1–R4 values. The worm graph is rebuilt from picked-golfer hole-by-hole scoring events on every refresh with no local storage. Missing players are excluded from a team total and marked with an asterisk.`;
   }catch(e){
     dot.className='dot';
     status.innerHTML=`<span class="error">Could not load live scores:</span> ${e.message}. This static page needs the ESPN public endpoint to be reachable from the browser and allowed by CORS.`;
